@@ -7,7 +7,270 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum TripStatus {
+  PLANNING
+  ACTIVE
+  SETTLING
+  SETTLED
+  ARCHIVED
+}
+
+enum TripMemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum SplitType {
+  EQUAL
+  PERCENTAGE
+  EXACT
+  EXCLUDE
+}
+
+enum SettlementStatus {
+  PENDING
+  COMPLETED
+  REJECTED
+}
+
+enum SubscriptionTier {
+  FREE
+  PRO
+  PREMIUM
+}
+
+enum SubStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  TRIALING
+}
+
+enum ExpenseCategory {
+  FOOD
+  TRANSPORT
+  ACCOMMODATION
+  ACTIVITY
+  SHOPPING
+  UTILITIES
+  OTHER
+}
+
+enum NotifType {
+  EXPENSE_ADDED
+  EXPENSE_UPDATED
+  EXPENSE_DELETED
+  MEMBER_JOINED
+  MEMBER_LEFT
+  CONTRIBUTION_ADDED
+  SETTLEMENT_CREATED
+  SETTLEMENT_COMPLETED
+  TRIP_SETTLED
+  PAYMENT_SUCCESS
+  PAYMENT_FAILED
+}
+
 model User {
-  id    String @id @default(uuid())
-  email String @unique
+  id           String            @id @default(uuid())
+  email        String            @unique
+  phone        String?           @unique
+  name         String
+  username     String            @unique
+  avatarUrl    String?
+  fcmToken     String?
+  googleId     String?           @unique
+  passwordHash String?
+  isVerified   Boolean           @default(false)
+  role         UserRole          @default(USER)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  // Relations
+  ownedTrips            Trip[]            @relation("TripOwner")
+  memberships           TripMember[]
+  paidExpenses          Expense[]         @relation("ExpensePayer")
+  expenseSplits         ExpenseSplit[]
+  contributionsGiven    PreContribution[] @relation("ContribGiver")
+  contributionsReceived PreContribution[] @relation("ContribReceiver")
+  settlementsAsPayer    Settlement[]      @relation("SettlementPayer")
+  settlementsAsPayee    Settlement[]      @relation("SettlementPayee")
+  subscription          UserSubscription?
+  notifications         Notification[]
+  refreshTokens         RefreshToken[]
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Trip {
+  id          String     @id @default(uuid())
+  ownerId     String
+  name        String
+  description String?
+  budget      Decimal?   @db.Decimal(12, 2)
+  currency    String     @default("INR")
+  inviteCode  String     @unique @default(cuid())
+  status      TripStatus @default(PLANNING)
+  startDate   DateTime?
+  endDate     DateTime?
+  coverImage  String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  owner            User              @relation("TripOwner", fields: [ownerId], references: [id])
+  members          TripMember[]
+  expenses         Expense[]
+  preContributions PreContribution[]
+  settlements      Settlement[]
+}
+
+model TripMember {
+  id              String         @id @default(uuid())
+  tripId          String
+  userId          String
+  role            TripMemberRole @default(MEMBER)
+  displayName     String?
+  preContribution Decimal        @default(0) @db.Decimal(12, 2)
+  joinedAt        DateTime       @default(now())
+  leftAt          DateTime?
+
+  // Relations
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([tripId, userId])
+}
+
+model PreContribution {
+  id         String   @id @default(uuid())
+  tripId     String
+  fromUserId String
+  toUserId   String
+  amount     Decimal  @db.Decimal(12, 2)
+  note       String?
+  createdAt  DateTime @default(now())
+
+  // Relations
+  trip     Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  fromUser User @relation("ContribGiver", fields: [fromUserId], references: [id])
+  toUser   User @relation("ContribReceiver", fields: [toUserId], references: [id])
+}
+
+model Expense {
+  id           String          @id @default(uuid())
+  tripId       String
+  paidByUserId String
+  title        String
+  description  String?
+  totalAmount  Decimal         @db.Decimal(12, 2)
+  category     ExpenseCategory @default(OTHER)
+  receiptUrl   String?
+  expenseDate  DateTime        @default(now())
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  // Relations
+  trip   Trip           @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  paidBy User           @relation("ExpensePayer", fields: [paidByUserId], references: [id])
+  splits ExpenseSplit[]
+}
+
+model ExpenseSplit {
+  id         String    @id @default(uuid())
+  expenseId  String
+  userId     String
+  splitType  SplitType @default(EQUAL)
+  amount     Decimal   @db.Decimal(12, 2)
+  percentage Decimal?  @db.Decimal(5, 2)
+  isSettled  Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+
+  // Relations
+  expense Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@unique([expenseId, userId])
+}
+
+model Settlement {
+  id        String           @id @default(uuid())
+  tripId    String
+  payerId   String
+  payeeId   String
+  amount    Decimal          @db.Decimal(12, 2)
+  status    SettlementStatus @default(PENDING)
+  method    String?
+  txnRef    String?
+  settledAt DateTime?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  // Relations
+  trip  Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  payer User @relation("SettlementPayer", fields: [payerId], references: [id])
+  payee User @relation("SettlementPayee", fields: [payeeId], references: [id])
+}
+
+model SubscriptionPlan {
+  id                    String           @id @default(uuid())
+  tier                  SubscriptionTier @unique
+  priceMonthly          Decimal          @db.Decimal(8, 2)
+  priceYearly           Decimal          @db.Decimal(8, 2)
+  maxTrips              Int
+  maxMembersPerTrip     Int
+  canScanReceipts       Boolean          @default(false)
+  canExport             Boolean          @default(false)
+  canCustomSplit        Boolean          @default(false)
+  canCurrencyConvert    Boolean          @default(false)
+  canAISettle           Boolean          @default(false)
+  cashfreePlanIdMonthly String?
+  cashfreePlanIdYearly  String?
+}
+
+model UserSubscription {
+  id                     String    @id @default(uuid())
+  userId                 String    @unique
+  planId                 String
+  cashfreeCustomerId     String?
+  cashfreeSubscriptionId String?
+  cashfreeOrderId        String?
+  status                 SubStatus @default(ACTIVE)
+  currentPeriodStart     DateTime?
+  currentPeriodEnd       DateTime?
+  cancelAtPeriodEnd      Boolean   @default(false)
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String    @id @default(uuid())
+  userId    String
+  type      NotifType
+  title     String
+  body      String
+  data      Json?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
 }

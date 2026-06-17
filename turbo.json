@@ -1,0 +1,23 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "dist/**"]
+    },
+    "@settl/database#generate": {
+      "cache": false
+    },
+    "api#build": {
+      "dependsOn": ["^build", "@settl/database#generate"]
+    },
+    "web#build": {
+      "dependsOn": ["^build", "@settl/database#generate"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {}
+  }
+}

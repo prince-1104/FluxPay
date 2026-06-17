@@ -1,0 +1,26 @@
+{
+  "name": "settl-monorepo",
+  "private": true,
+  "packageManager": "pnpm@10.13.1",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.4"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "esbuild",
+      "prisma",
+      "sharp"
+    ]
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

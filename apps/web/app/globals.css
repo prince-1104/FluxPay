@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #080810;
+  --color-surface: #0F0F1A;
+  --color-surface-2: #1A1A2E;
+  --color-border: rgba(255,255,255,0.08);
+  --color-border-strong: rgba(255,255,255,0.15);
+  --color-text: #F8F8FF;
+  --color-text-muted: rgba(248,248,255,0.5);
+  --gradient-brand: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%);
+  --gradient-accent: linear-gradient(135deg, #F59E0B 0%, #FCD34D 100%);
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Geist', system-ui, -apple-system, sans-serif;
+}

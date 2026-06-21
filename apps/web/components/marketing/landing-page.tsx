@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { MarketingHeader } from "./marketing-header";
 import { MarketingFooter } from "./marketing-footer";
+import { MobileAppDownloadButton } from "./mobile-app-download-button";
 
 const features = [
   {
@@ -82,7 +83,7 @@ export function LandingPage() {
             <p className="mx-auto mt-6 max-w-2xl text-lg text-neutral-400 md:text-xl">
               Settl helps friend groups and travel teams track shared expenses, calculate who owes what, and settle up — without the spreadsheet chaos.
             </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:flex-wrap">
               <Link href="/register">
                 <Button size="lg" className="gradient-brand border-0 px-8 text-base shadow-xl shadow-brand/30">
                   Start for free
@@ -94,6 +95,7 @@ export function LandingPage() {
                   View demo
                 </Button>
               </Link>
+              <MobileAppDownloadButton size="lg" />
             </div>
             <p className="mt-4 text-xs text-neutral-600">No credit card required · Free plan forever</p>
           </motion.div>

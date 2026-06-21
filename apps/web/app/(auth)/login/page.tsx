@@ -8,6 +8,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MobileAppDownloadButton } from "@/components/marketing/mobile-app-download-button";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -50,6 +51,18 @@ export default function LoginPage() {
         No account?{" "}
         <Link href="/register" className="text-brand-light hover:underline font-medium">Create one free</Link>
       </p>
+
+      <div className="relative py-2">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-white/10" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background px-2 text-neutral-500">or</span>
+        </div>
+      </div>
+
+      <MobileAppDownloadButton fullWidth size="lg" />
+      <p className="text-center text-xs text-neutral-600">Download the FluxPay Android app</p>
     </div>
   );
 }

@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
-    "lint": "turbo run lint"
+    "lint": "turbo run lint",
+    "eas-build-post-install": "pnpm --filter @settl/types build && pnpm --filter @settl/utils build"
   },
   "devDependencies": {
     "turbo": "^2.0.4"

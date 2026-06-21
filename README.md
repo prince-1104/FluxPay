@@ -62,6 +62,15 @@ pnpm dev
 | alice@settl.com | Password123! |
 | bob@settl.com | Password123! |
 
+## Mobile
+
+```bash
+pnpm --filter mobile start          # Expo dev server
+pnpm --filter mobile build:android  # EAS preview APK
+```
+
+See [apps/mobile/README.md](apps/mobile/README.md) for API URL setup and Android build steps.
+
 ## API Overview (`/api/v1`)
 
 | Area | Endpoints |

@@ -180,3 +180,47 @@ export interface ApiError {
   upgradeRequired?: boolean;
   requiredTier?: string;
 }
+
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: string;
+}
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  name: string;
+  username: string;
+  avatarUrl?: string | null;
+  role: UserRole;
+  isVerified: boolean;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  name: string;
+  username: string;
+}
+
+export interface TripWithMembers extends Trip {
+  members: Array<TripMember & { user: Pick<User, 'id' | 'name' | 'username' | 'avatarUrl'> }>;
+  memberCount?: number;
+  expenseTotal?: number;
+}
+
+export interface ExpenseWithSplits extends Expense {
+  splits: ExpenseSplit[];
+  paidBy: Pick<User, 'id' | 'name' | 'username' | 'avatarUrl'>;
+}
+
+export interface SettlementWithUsers extends Settlement {
+  payer: Pick<User, 'id' | 'name' | 'username' | 'avatarUrl'>;
+  payee: Pick<User, 'id' | 'name' | 'username' | 'avatarUrl'>;
+}

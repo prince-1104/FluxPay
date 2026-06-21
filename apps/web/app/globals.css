@@ -12,6 +12,27 @@
   --color-text-muted: rgba(248,248,255,0.5);
   --gradient-brand: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%);
   --gradient-accent: linear-gradient(135deg, #F59E0B 0%, #FCD34D 100%);
+
+  --background: 240 20% 4%;
+  --foreground: 240 5% 96%;
+  --card: 240 15% 8%;
+  --card-foreground: 240 5% 96%;
+  --popover: 240 15% 10%;
+  --popover-foreground: 240 5% 96%;
+  --primary: 262 83% 58%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 10% 14%;
+  --secondary-foreground: 240 5% 96%;
+  --muted: 240 10% 14%;
+  --muted-foreground: 240 5% 64%;
+  --accent: 240 10% 14%;
+  --accent-foreground: 240 5% 96%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 240 10% 18%;
+  --input: 240 10% 18%;
+  --ring: 262 83% 58%;
+  --radius: 0.75rem;
 }
 
 html {
@@ -22,4 +43,18 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   font-family: 'Geist', system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+}
+
+.gradient-brand {
+  background: var(--gradient-brand);
+}
+
+.glass {
+  @apply bg-surface/80 backdrop-blur-md border border-white/10;
 }

@@ -1,7 +1,20 @@
-/**
- * Formats a numeric amount into a localized currency string.
- * // TODO: Implement format currency
- */
+const CURRENCY_LOCALE: Record<string, string> = {
+  INR: 'en-IN',
+  USD: 'en-US',
+  EUR: 'de-DE',
+  GBP: 'en-GB',
+};
+
 export function formatCurrency(amount: number, currency = 'INR'): string {
-  return `${currency} ${amount.toFixed(2)}`;
+  const locale = CURRENCY_LOCALE[currency] ?? 'en-IN';
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
+
+export function roundCurrency(amount: number): number {
+  return Math.round(amount * 100) / 100;
 }

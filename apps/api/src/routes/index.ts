@@ -6,11 +6,13 @@ import expenseRoutes from './expense.routes.js';
 import settlementRoutes from './settlement.routes.js';
 import notificationRoutes from './notification.routes.js';
 import premiumRoutes from './premium.routes.js';
+import friendRoutes from './friend.routes.js';
 
 const router = Router();
 
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
+router.use('/friends', friendRoutes);
 router.use('/trips', tripRoutes);
 router.use('/trips/:tripId/expenses', expenseRoutes);
 router.use('/trips/:tripId/settlements', settlementRoutes);

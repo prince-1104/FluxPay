@@ -7,6 +7,8 @@ import {
   joinTripSchema,
   idParamSchema,
   preContributionSchema,
+  addTripMemberSchema,
+  tripMemberParamSchema,
 } from '../validators/schemas.js';
 import * as tripService from '../services/trip.service.js';
 
@@ -99,6 +101,26 @@ router.post('/:id/contributions', validate(idParamSchema, 'params'), validate(pr
     const authReq = req as AuthenticatedRequest;
     const contribution = await tripService.addPreContribution(req.params.id, authReq.user.id, req.body);
     res.status(201).json({ data: contribution });
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.post('/:id/members', validate(idParamSchema, 'params'), validate(addTripMemberSchema), async (req, res, next) => {
+  try {
+    const authReq = req as AuthenticatedRequest;
+    const member = await tripService.addTripMember(req.params.id, authReq.user.id, req.body);
+    res.status(201).json({ data: member });
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.delete('/:id/members/:userId', validate(tripMemberParamSchema, 'params'), async (req, res, next) => {
+  try {
+    const authReq = req as AuthenticatedRequest;
+    const result = await tripService.removeTripMember(req.params.id, authReq.user.id, req.params.userId);
+    res.json({ data: result });
   } catch (e) {
     next(e);
   }

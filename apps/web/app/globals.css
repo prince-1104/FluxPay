@@ -35,17 +35,71 @@
   --input: 240 10% 18%;
   --ring: 262 83% 58%;
   --radius: 0.75rem;
+
+  --mobile-nav-height: 5.25rem;
+  --mobile-fab-size: 2.875rem;
+  --mobile-fab-gap: 0.625rem;
 }
 
 html {
   color-scheme: dark;
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+  height: 100%;
 }
 
 body {
   background: var(--color-bg);
   color: var(--color-text);
   font-family: 'Geist', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+  min-height: 100%;
+  min-height: 100dvh;
+}
+
+/* iOS safe areas */
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pb-mobile-nav {
+  padding-bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom, 0px));
+}
+
+.pb-mobile-nav-fab {
+  padding-bottom: calc(
+    var(--mobile-nav-height) + var(--mobile-fab-gap) + var(--mobile-fab-size) + 0.25rem +
+      env(safe-area-inset-bottom, 0px)
+  );
+}
+
+@media (min-width: 1024px) {
+  .pb-mobile-nav,
+  .pb-mobile-nav-fab {
+    padding-bottom: 2rem;
+  }
+}
+
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+/* Horizontal scroll tabs — hide scrollbar, keep swipe */
+.scroll-tabs {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+@media (max-width: 640px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
 }
 
 @layer base {
@@ -57,7 +111,20 @@ body {
 .mesh-bg {
   background-color: var(--color-bg);
   background-image: var(--gradient-mesh);
-  background-attachment: fixed;
+  background-attachment: scroll;
+}
+
+@media (min-width: 768px) {
+  .mesh-bg {
+    background-attachment: fixed;
+  }
+}
+
+.app-scroll-main {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
 }
 
 .gradient-brand {
@@ -105,4 +172,175 @@ body {
 .glow-orb {
   @apply absolute rounded-full blur-3xl;
   animation: glow-pulse 6s ease-in-out infinite;
+}
+
+/* Premium 3D CTA — primary action (Add expense) */
+.premium-cta {
+  position: relative;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 14px;
+  outline: none;
+}
+
+.premium-cta.hidden {
+  display: none;
+}
+
+.premium-cta:focus-visible .premium-cta-face {
+  outline: 2px solid rgba(167, 139, 250, 0.8);
+  outline-offset: 3px;
+}
+
+.premium-cta-glow {
+  position: absolute;
+  inset: -6px -4px -8px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.55), rgba(245, 158, 11, 0.15));
+  filter: blur(14px);
+  opacity: 0.55;
+  z-index: 0;
+  animation: premium-cta-pulse 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.premium-cta-face {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.125rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #fff;
+  white-space: nowrap;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #b794f6 0%, #7c3aed 42%, #6d28d9 100%);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.38),
+    inset 0 -3px 6px rgba(49, 19, 120, 0.35),
+    0 4px 0 #5b21b6,
+    0 8px 24px rgba(124, 58, 237, 0.45);
+  transition: transform 0.14s ease, box-shadow 0.14s ease, filter 0.14s ease;
+}
+
+.premium-cta-lg .premium-cta-face {
+  padding: 0.8125rem 1.375rem;
+  font-size: 0.9375rem;
+  border-radius: 13px;
+}
+
+.premium-cta-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.premium-cta-icon svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
+}
+
+.premium-cta:hover:not(.premium-cta-disabled) .premium-cta-face {
+  background: linear-gradient(180deg, #c4b5fd 0%, #8b5cf6 40%, #7c3aed 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -3px 6px rgba(49, 19, 120, 0.3),
+    0 4px 0 #5b21b6,
+    0 10px 32px rgba(124, 58, 237, 0.6);
+  transform: translateY(-2px);
+}
+
+.premium-cta:hover:not(.premium-cta-disabled) .premium-cta-glow {
+  opacity: 0.85;
+}
+
+.premium-cta:active:not(.premium-cta-disabled) .premium-cta-face {
+  transform: translateY(3px);
+  box-shadow:
+    inset 0 2px 6px rgba(49, 19, 120, 0.45),
+    0 1px 0 #5b21b6,
+    0 3px 12px rgba(124, 58, 237, 0.35);
+}
+
+.premium-cta-disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.premium-cta-sparkle {
+  animation: premium-cta-sparkle 2s ease-in-out infinite;
+}
+
+@keyframes premium-cta-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.98); }
+  50% { opacity: 0.75; transform: scale(1.03); }
+}
+
+@keyframes premium-cta-sparkle {
+  0%, 100% { opacity: 0.45; transform: rotate(0deg) scale(1); }
+  50% { opacity: 1; transform: rotate(12deg) scale(1.15); }
+}
+
+/* Mobile expense FAB — bottom-right, compact */
+.mobile-fab-slot {
+  bottom: calc(
+    var(--mobile-nav-height) + var(--mobile-fab-gap) + env(safe-area-inset-bottom, 0px)
+  );
+}
+
+.expense-fab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--mobile-fab-size);
+  height: var(--mobile-fab-size);
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(180deg, #a78bfa 0%, #7c3aed 50%, #6d28d9 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 3px 0 #5b21b6,
+    0 5px 18px rgba(124, 58, 237, 0.45),
+    0 0 0 3px rgba(124, 58, 237, 0.1);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.expense-fab:active {
+  transform: scale(0.94) translateY(2px);
+  box-shadow:
+    inset 0 2px 4px rgba(49, 19, 120, 0.4),
+    0 1px 0 #5b21b6,
+    0 3px 12px rgba(124, 58, 237, 0.35),
+    0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.expense-fab-badge {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  display: flex;
+  min-width: 1rem;
+  height: 1rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.2rem;
+  border-radius: 9999px;
+  border: 1.5px solid var(--color-surface);
+  background: #f59e0b;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
 }

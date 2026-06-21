@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { User, Bell, Shield, CreditCard, LogOut } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
@@ -29,6 +30,16 @@ export default function SettingsPage() {
   const [username, setUsername] = useState(user?.username ?? "");
   const [saving, setSaving] = useState(false);
 
+  const { data: subscription } = useQuery({
+    queryKey: ["subscription"],
+    queryFn: async () => {
+      const { data } = await api.get("/users/subscription");
+      return data.data;
+    },
+  });
+
+  const planTier = subscription?.plan?.tier ?? "FREE";
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -54,8 +65,8 @@ export default function SettingsPage() {
     <div className="space-y-8">
       <PageHeader title="Settings" description="Manage your account, preferences, and billing." />
 
-      <div className="grid gap-8 lg:grid-cols-[220px_1fr]">
-        <nav className="flex lg:flex-col gap-1 overflow-x-auto pb-2 lg:pb-0">
+          <div className="grid gap-8 lg:grid-cols-[220px_1fr]">
+        <nav className="flex gap-1 overflow-x-auto scroll-tabs pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
           {sections.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
@@ -92,7 +103,7 @@ export default function SettingsPage() {
                   <p className="font-semibold text-lg">{user?.name}</p>
                   <p className="text-sm text-neutral-500">@{user?.username}</p>
                   <Badge variant="outline" className="mt-2 border-brand/30 text-brand-light text-xs">
-                    {user?.subscriptionTier ?? "FREE"} plan
+                    {planTier} plan
                   </Badge>
                 </div>
               </div>
@@ -157,7 +168,7 @@ export default function SettingsPage() {
             <div className="space-y-6">
               <h2 className="font-semibold text-lg">Billing</h2>
               <p className="text-sm text-neutral-500">
-                You&apos;re on the <span className="text-brand-light font-medium">{user?.subscriptionTier ?? "FREE"}</span> plan.
+                You&apos;re on the <span className="text-brand-light font-medium">{planTier}</span> plan.
               </p>
               <Link href="/pricing">
                 <Button className="gradient-brand border-0">View plans & upgrade</Button>

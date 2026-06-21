@@ -269,3 +269,101 @@ export async function addPreContribution(
     amount: decimalToNumber(contribution.amount),
   };
 }
+
+export async function addTripMember(
+  tripId: string,
+  actorUserId: string,
+  target: { userId?: string; username?: string }
+) {
+  await assertTripAdmin(tripId, actorUserId);
+
+  let targetUser;
+  if (target.userId) {
+    targetUser = await prisma.user.findUnique({ where: { id: target.userId } });
+  } else if (target.username) {
+    targetUser = await prisma.user.findUnique({ where: { username: target.username } });
+  }
+  if (!targetUser) throw new NotFoundError('User not found');
+
+  const trip = await prisma.trip.findUniqueOrThrow({
+    where: { id: tripId },
+    include: { owner: true },
+  });
+
+  const existing = await prisma.tripMember.findUnique({
+    where: { tripId_userId: { tripId, userId: targetUser.id } },
+  });
+  if (existing && !existing.leftAt) {
+    throw new ForbiddenError('User is already a member of this trip');
+  }
+
+  const ownerPlan = await getUserPlanLimits(trip.ownerId);
+  const memberCount = await countTripMembers(tripId);
+  assertMemberLimit(memberCount, ownerPlan);
+
+  const member = existing
+    ? await prisma.tripMember.update({
+        where: { id: existing.id },
+        data: { leftAt: null, joinedAt: new Date() },
+        include: { user: { select: { id: true, name: true, username: true, avatarUrl: true } } },
+      })
+    : await prisma.tripMember.create({
+        data: { tripId, userId: targetUser.id },
+        include: { user: { select: { id: true, name: true, username: true, avatarUrl: true } } },
+      });
+
+  const actor = await prisma.user.findUniqueOrThrow({ where: { id: actorUserId } });
+  await createNotification({
+    userId: targetUser.id,
+    type: 'TRIP_INVITE',
+    title: 'Added to trip',
+    body: `${actor.name} added you to ${trip.name}`,
+    data: { tripId, userId: actorUserId },
+  });
+
+  try {
+    getIo().to(`trip:${tripId}`).emit('member:joined', { tripId, member });
+  } catch {
+    // Socket may not be initialized in tests
+  }
+
+  return member;
+}
+
+export async function removeTripMember(tripId: string, actorUserId: string, targetUserId: string) {
+  const actor = await assertTripAdmin(tripId, actorUserId);
+
+  const target = await prisma.tripMember.findFirst({
+    where: { tripId, userId: targetUserId, leftAt: null },
+    include: { user: { select: { id: true, name: true, username: true } } },
+  });
+  if (!target) throw new NotFoundError('Member not found');
+  if (target.role === 'OWNER') throw new ForbiddenError('Cannot remove the trip owner');
+  if (target.role === 'ADMIN' && actor.role !== 'OWNER') {
+    throw new ForbiddenError('Only the owner can remove admins');
+  }
+
+  const trip = await prisma.trip.findUniqueOrThrow({ where: { id: tripId } });
+
+  await prisma.tripMember.update({
+    where: { id: target.id },
+    data: { leftAt: new Date() },
+  });
+
+  const actorUser = await prisma.user.findUniqueOrThrow({ where: { id: actorUserId } });
+  await createNotification({
+    userId: targetUserId,
+    type: 'MEMBER_LEFT',
+    title: 'Removed from trip',
+    body: `${actorUser.name} removed you from ${trip.name}`,
+    data: { tripId, userId: actorUserId },
+  });
+
+  try {
+    getIo().to(`trip:${tripId}`).emit('member:left', { tripId, userId: targetUserId });
+  } catch {
+    // Socket may not be initialized in tests
+  }
+
+  return { success: true };
+}

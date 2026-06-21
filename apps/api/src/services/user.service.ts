@@ -1,6 +1,42 @@
 import { prisma } from '@settl/database';
+import type { UserSearchResult } from '@settl/types';
 import { ConflictError, NotFoundError } from '../utils/errors.js';
 import { getMe } from './auth.service.js';
+import { getFriendRelationForUsers } from './friend.service.js';
+
+const userSelect = { id: true, name: true, username: true, avatarUrl: true } as const;
+
+export async function searchUsers(userId: string, query: string): Promise<UserSearchResult[]> {
+  const q = query.trim();
+  if (q.length < 2) return [];
+
+  const users = await prisma.user.findMany({
+    where: {
+      NOT: { id: userId },
+      OR: [
+        { username: { contains: q, mode: 'insensitive' } },
+        { name: { contains: q, mode: 'insensitive' } },
+      ],
+    },
+    select: userSelect,
+    take: 20,
+    orderBy: [{ username: 'asc' }],
+  });
+
+  const relationMap = await getFriendRelationForUsers(
+    userId,
+    users.map((u) => u.id)
+  );
+
+  return users.map((user) => {
+    const rel = relationMap.get(user.id) ?? { status: 'NONE' as const };
+    return {
+      ...user,
+      friendshipStatus: rel.status,
+      friendshipId: rel.friendshipId,
+    };
+  });
+}
 
 export async function updateProfile(
   userId: string,

@@ -67,10 +67,10 @@ export default function DashboardPage() {
     .map((t) => ({ name: t.name, value: t.expenseTotal ?? 0 }));
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
-        title={`Welcome back, ${user?.name?.split(" ")[0] ?? "there"} 👋`}
-        description="Here's what's happening across your trips today."
+        title={`Hi, ${user?.name?.split(" ")[0] ?? "there"} 👋`}
+        description="Here's what's happening across your trips."
       >
         <Link href="/trips">
           <Button className="gradient-brand border-0 shadow-lg shadow-brand/20">
@@ -80,7 +80,7 @@ export default function DashboardPage() {
         </Link>
       </PageHeader>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatCard label="Total spent" value={formatCurrency(totalSpent)} icon={Wallet} valueClassName="text-emerald-400" />
         <StatCard label="Active trips" value={activeTrips} icon={Map} trend={`${trips.length} total`} />
         <StatCard label="Group members" value={totalMembers} icon={Users} />
@@ -94,7 +94,7 @@ export default function DashboardPage() {
               <TrendingUp className="h-4 w-4 text-brand-light" />
               Spending by trip
             </h3>
-            <div className="h-64">
+            <div className="h-48 sm:h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <defs>
@@ -118,7 +118,7 @@ export default function DashboardPage() {
           <div className="lg:col-span-2 glass-card p-6">
             <h3 className="font-semibold mb-4">Expense breakdown</h3>
             {pieData.length > 0 ? (
-              <div className="h-64">
+              <div className="h-48 sm:h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={4}>

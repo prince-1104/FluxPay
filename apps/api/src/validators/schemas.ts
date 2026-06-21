@@ -79,6 +79,33 @@ export const preContributionSchema = z.object({
   note: z.string().max(200).optional(),
 });
 
+export const searchUsersSchema = z.object({
+  q: z.string().min(2).max(50),
+});
+
+export const friendRequestSchema = z
+  .object({
+    userId: z.string().uuid().optional(),
+    username: z.string().min(3).max(30).regex(/^[a-zA-Z0-9_]+$/).optional(),
+  })
+  .refine((d) => d.userId || d.username, { message: 'userId or username required' });
+
+export const friendshipIdParamSchema = z.object({
+  id: z.string().uuid(),
+});
+
+export const addTripMemberSchema = z
+  .object({
+    userId: z.string().uuid().optional(),
+    username: z.string().min(3).max(30).regex(/^[a-zA-Z0-9_]+$/).optional(),
+  })
+  .refine((d) => d.userId || d.username, { message: 'userId or username required' });
+
+export const tripMemberParamSchema = z.object({
+  id: z.string().uuid(),
+  userId: z.string().uuid(),
+});
+
 export const idParamSchema = z.object({
   id: z.string().uuid(),
 });

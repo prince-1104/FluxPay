@@ -21,11 +21,11 @@ export function StatCard({
   valueClassName,
 }: StatCardProps) {
   return (
-    <div className={cn("saas-card p-5", className)}>
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">{label}</p>
-          <p className={cn("mt-2 text-2xl font-bold tracking-tight", valueClassName)}>{value}</p>
+    <div className={cn("saas-card p-4 sm:p-5", className)}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-neutral-500">{label}</p>
+          <p className={cn("mt-1.5 sm:mt-2 text-xl sm:text-2xl font-bold tracking-tight truncate", valueClassName)}>{value}</p>
           {trend && (
             <p className={cn("mt-1 text-xs", trendUp ? "text-emerald-400" : "text-neutral-500")}>
               {trend}

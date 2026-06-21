@@ -74,6 +74,15 @@ enum NotifType {
   TRIP_SETTLED
   PAYMENT_SUCCESS
   PAYMENT_FAILED
+  FRIEND_REQUEST
+  FRIEND_ACCEPTED
+  TRIP_INVITE
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
 
 model User {
@@ -103,6 +112,23 @@ model User {
   subscription          UserSubscription?
   notifications         Notification[]
   refreshTokens         RefreshToken[]
+  friendRequestsSent     Friendship[] @relation("FriendshipRequester")
+  friendRequestsReceived Friendship[] @relation("FriendshipAddressee")
+}
+
+model Friendship {
+  id          String           @id @default(uuid())
+  requesterId String
+  addresseeId String
+  status      FriendshipStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  requester User @relation("FriendshipRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  addressee User @relation("FriendshipAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, addresseeId])
+  @@index([addresseeId, status])
 }
 
 model RefreshToken {

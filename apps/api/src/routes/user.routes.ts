@@ -1,12 +1,23 @@
 import { Router } from 'express';
 import { AuthenticatedRequest, requireAuth } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
-import { updateProfileSchema } from '../validators/schemas.js';
+import { updateProfileSchema, searchUsersSchema } from '../validators/schemas.js';
 import * as userService from '../services/user.service.js';
 import { getCurrentSubscription, listPlans } from '../services/cashfree.service.js';
 import { registerFcmToken } from '../services/push.service.js';
 
 const router = Router();
+
+router.get('/search', requireAuth, validate(searchUsersSchema, 'query'), async (req, res, next) => {
+  try {
+    const authReq = req as AuthenticatedRequest;
+    const { q } = req.query as { q: string };
+    const users = await userService.searchUsers(authReq.user.id, q);
+    res.json({ data: users });
+  } catch (e) {
+    next(e);
+  }
+});
 
 router.get('/me', requireAuth, async (req, res, next) => {
   try {

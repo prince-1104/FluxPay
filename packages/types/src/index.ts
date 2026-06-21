@@ -25,7 +25,12 @@ export type NotifType =
   | 'SETTLEMENT_COMPLETED'
   | 'TRIP_SETTLED'
   | 'PAYMENT_SUCCESS'
-  | 'PAYMENT_FAILED';
+  | 'PAYMENT_FAILED'
+  | 'FRIEND_REQUEST'
+  | 'FRIEND_ACCEPTED'
+  | 'TRIP_INVITE';
+
+export type FriendshipStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED';
 
 export interface User {
   id: string;
@@ -223,4 +228,30 @@ export interface ExpenseWithSplits extends Expense {
 export interface SettlementWithUsers extends Settlement {
   payer: Pick<User, 'id' | 'name' | 'username' | 'avatarUrl'>;
   payee: Pick<User, 'id' | 'name' | 'username' | 'avatarUrl'>;
+}
+
+export type UserPublic = Pick<User, 'id' | 'name' | 'username' | 'avatarUrl'>;
+
+export interface Friendship {
+  id: string;
+  requesterId: string;
+  addresseeId: string;
+  status: FriendshipStatus;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface FriendWithUser extends Friendship {
+  user: UserPublic;
+}
+
+export type FriendRelationStatus =
+  | 'NONE'
+  | 'FRIENDS'
+  | 'PENDING_SENT'
+  | 'PENDING_RECEIVED';
+
+export interface UserSearchResult extends UserPublic {
+  friendshipStatus: FriendRelationStatus;
+  friendshipId?: string;
 }

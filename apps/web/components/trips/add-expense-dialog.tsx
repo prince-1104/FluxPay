@@ -210,7 +210,7 @@ export function AddExpenseDialog({ trip, open, onOpenChange, onSuccess }: Props)
                 <SelectTrigger className="bg-surface border-white/10">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent sideOffset={4}>
                   {CATEGORIES.map((c) => (
                     <SelectItem key={c} value={c}>
                       {c.charAt(0) + c.slice(1).toLowerCase()}
@@ -230,10 +230,11 @@ export function AddExpenseDialog({ trip, open, onOpenChange, onSuccess }: Props)
               <SelectTrigger className="bg-surface border-white/10">
                 <SelectValue placeholder="Who paid?" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent sideOffset={4}>
                 {trip.members.map((m) => (
                   <SelectItem key={m.userId} value={m.userId}>
-                    {memberName(m)}
+                    {m.user?.name ?? m.displayName ?? "Member"}
+                    {m.role === "OWNER" ? " (Owner)" : m.role === "ADMIN" ? " (Admin)" : ""}
                   </SelectItem>
                 ))}
               </SelectContent>

@@ -1,7 +1,7 @@
 import { prisma } from '@settl/database';
 import { assertFeature, computeTripBalances, formatCurrency } from '@settl/utils';
 import { NotFoundError } from '../utils/errors.js';
-import { assertTripMember, getUserPlanLimits, decimalToNumber } from './subscription.service.js';
+import { assertTripMember, getEffectivePlanForTrip, decimalToNumber } from './subscription.service.js';
 
 function escapeCsv(value: string | number | null | undefined): string {
   const str = String(value ?? '');
@@ -17,7 +17,7 @@ export async function exportTripCsv(tripId: string, userId: string): Promise<str
     where: { id: tripId },
     include: { owner: true },
   });
-  const ownerPlan = await getUserPlanLimits(trip.ownerId);
+  const ownerPlan = await getEffectivePlanForTrip(trip.ownerId, tripId);
   assertFeature(ownerPlan, 'export');
 
   const expenses = await prisma.expense.findMany({
@@ -65,7 +65,7 @@ export async function exportTripSummary(tripId: string, userId: string) {
     },
   });
 
-  const ownerPlan = await getUserPlanLimits(trip.ownerId);
+  const ownerPlan = await getEffectivePlanForTrip(trip.ownerId, tripId);
   assertFeature(ownerPlan, 'export');
 
   const balances = computeTripBalances({

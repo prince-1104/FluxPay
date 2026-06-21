@@ -23,8 +23,8 @@ async function main() {
     },
     {
       tier: 'PRO' as const,
-      priceMonthly: 299,
-      priceYearly: 2499,
+      priceMonthly: 29,
+      priceYearly: 243,
       maxTrips: 10,
       maxMembersPerTrip: 15,
       canScanReceipts: true,
@@ -35,8 +35,8 @@ async function main() {
     },
     {
       tier: 'PREMIUM' as const,
-      priceMonthly: 599,
-      priceYearly: 4999,
+      priceMonthly: 299,
+      priceYearly: 2499,
       maxTrips: -1,
       maxMembersPerTrip: -1,
       canScanReceipts: true,

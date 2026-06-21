@@ -1,7 +1,8 @@
+import { prisma } from '@settl/database';
 import { assertFeature } from '@settl/utils';
 import { env } from '../config/env.js';
 import { AppError } from '../utils/errors.js';
-import { getUserPlanLimits } from './subscription.service.js';
+import { assertTripMember, getEffectivePlanForTrip, getUserPlanLimits } from './subscription.service.js';
 
 export type OcrResult = {
   merchant?: string;
@@ -12,8 +13,15 @@ export type OcrResult = {
   confidence: number;
 };
 
-export async function scanReceipt(userId: string, imageBase64: string): Promise<OcrResult> {
-  const plan = await getUserPlanLimits(userId);
+export async function scanReceipt(userId: string, imageBase64: string, tripId?: string): Promise<OcrResult> {
+  let plan;
+  if (tripId) {
+    await assertTripMember(tripId, userId);
+    const trip = await prisma.trip.findUniqueOrThrow({ where: { id: tripId } });
+    plan = await getEffectivePlanForTrip(trip.ownerId, tripId);
+  } else {
+    plan = await getUserPlanLimits(userId);
+  }
   assertFeature(plan, 'scanReceipts');
 
   if (!imageBase64) throw new AppError('Image data is required', 400);

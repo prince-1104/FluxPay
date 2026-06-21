@@ -7,7 +7,7 @@ import { TrendingUp, Users, Wallet } from "lucide-react";
 const stats = [
   {
     label: "Total spent",
-    value: "$12,450",
+    value: "₹12,450",
     icon: Wallet,
     gradient: "from-emerald-500/30 to-teal-400/10",
     text: "text-emerald-300",
@@ -25,7 +25,7 @@ const stats = [
   },
   {
     label: "Pending",
-    value: "$2,100",
+    value: "₹2,100",
     icon: TrendingUp,
     gradient: "from-amber-500/30 to-orange-400/10",
     text: "text-amber-300",
@@ -205,7 +205,7 @@ export function DashboardPreview3D() {
               style={{ transform: "translateZ(80px) rotateY(-8deg)" }}
             >
               <p className="text-[10px] text-neutral-500">Settled</p>
-              <p className="text-sm font-bold text-emerald-400">$4,200</p>
+              <p className="text-sm font-bold text-emerald-400">₹4,200</p>
             </motion.div>
           </div>
         </div>

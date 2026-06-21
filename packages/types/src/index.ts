@@ -218,6 +218,7 @@ export interface TripWithMembers extends Trip {
   members: Array<TripMember & { user: Pick<User, 'id' | 'name' | 'username' | 'avatarUrl'> }>;
   memberCount?: number;
   expenseTotal?: number;
+  isProTrial?: boolean;
 }
 
 export interface ExpenseWithSplits extends Expense {

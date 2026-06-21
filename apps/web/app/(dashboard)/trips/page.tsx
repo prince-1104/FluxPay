@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { Plus, Link2, Map, Search, Users } from "lucide-react";
+import { Plus, Link2, Map, Search, Users, Sparkles } from "lucide-react";
 import { api, getApiError } from "@/lib/api";
 import { formatCurrency } from "@/lib/currency";
 import type { TripWithMembers } from "@settl/types";
@@ -39,6 +39,21 @@ export default function TripsPage() {
       return data.data as TripWithMembers[];
     },
   });
+
+  const { data: subscription } = useQuery({
+    queryKey: ["subscription"],
+    queryFn: async () => {
+      const { data } = await api.get("/users/subscription");
+      return data.data as {
+        plan: { tier: string };
+        proTrialAvailable?: boolean;
+        proTrialTripId?: string | null;
+      };
+    },
+  });
+
+  const isFreeTier = subscription?.plan?.tier === "FREE";
+  const showProTrialBanner = isFreeTier && (subscription?.proTrialAvailable || trips.some((t) => t.isProTrial));
 
   const filtered = trips.filter((t) =>
     t.name.toLowerCase().includes(search.toLowerCase())
@@ -111,6 +126,14 @@ export default function TripsPage() {
           </DialogTrigger>
           <DialogContent className="glass-card border-white/10">
             <DialogHeader><DialogTitle>Create a trip</DialogTitle></DialogHeader>
+            {subscription?.proTrialAvailable && (
+              <div className="flex items-start gap-2 rounded-lg border border-brand/25 bg-brand/10 px-3 py-2.5 text-xs text-brand-light">
+                <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <span>
+                  Your first trip acts as <strong className="font-semibold">Pro</strong> — custom splits, OCR & exports included.
+                </span>
+              </div>
+            )}
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="space-y-2">
                 <Label>Trip name</Label>
@@ -129,6 +152,24 @@ export default function TripsPage() {
           </DialogContent>
         </Dialog>
       </PageHeader>
+
+      {showProTrialBanner && (
+        <div className="flex items-start gap-3 rounded-xl border border-brand/25 bg-brand/10 p-4">
+          <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-brand-light" />
+          <div>
+            <p className="text-sm font-medium text-brand-light">
+              {subscription?.proTrialAvailable
+                ? "Your first trip unlocks Pro features free"
+                : "You have a Pro trial trip"}
+            </p>
+            <p className="mt-1 text-xs text-neutral-400">
+              {subscription?.proTrialAvailable
+                ? "Create a trip to get custom splits, receipt OCR, and CSV exports at no extra cost."
+                : "One of your trips includes Pro features — custom splits, OCR & exports."}
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
@@ -161,9 +202,16 @@ export default function TripsPage() {
                 <div className="saas-card-hover p-5 h-full group">
                   <div className="flex justify-between items-start gap-2">
                     <h3 className="font-semibold text-lg group-hover:text-brand-light transition-colors">{trip.name}</h3>
-                    <Badge variant="outline" className={statusStyle[trip.status] ?? statusStyle.PLANNING}>
-                      {trip.status}
-                    </Badge>
+                    <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+                      {trip.isProTrial && (
+                        <Badge variant="outline" className="border-brand/30 text-brand-light bg-brand/10 text-[10px]">
+                          Pro trial
+                        </Badge>
+                      )}
+                      <Badge variant="outline" className={statusStyle[trip.status] ?? statusStyle.PLANNING}>
+                        {trip.status}
+                      </Badge>
+                    </div>
                   </div>
                   {trip.description && (
                     <p className="mt-1.5 text-sm text-neutral-500 line-clamp-2">{trip.description}</p>

@@ -70,10 +70,11 @@ router.get('/export/:tripId/summary', requireAuth, validate(z.object({ tripId: z
 
 router.post('/receipt/scan', requireAuth, validate(z.object({
   imageBase64: z.string().min(1),
+  tripId: z.string().uuid().optional(),
 })), async (req, res, next) => {
   try {
     const authReq = req as AuthenticatedRequest;
-    const result = await scanReceipt(authReq.user.id, req.body.imageBase64);
+    const result = await scanReceipt(authReq.user.id, req.body.imageBase64, req.body.tripId);
     res.json({ data: result });
   } catch (e) {
     next(e);

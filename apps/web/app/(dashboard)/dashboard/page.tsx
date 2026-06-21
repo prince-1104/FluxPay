@@ -10,6 +10,7 @@ import {
   Wallet,
   TrendingUp,
   ArrowUpRight,
+  Sparkles,
 } from "lucide-react";
 import {
   AreaChart,
@@ -43,6 +44,14 @@ const statusColors: Record<string, string> = {
 
 export default function DashboardPage() {
   const user = useAuthStore((s) => s.user);
+
+  const { data: subscription } = useQuery({
+    queryKey: ["subscription"],
+    queryFn: async () => {
+      const { data } = await api.get("/users/subscription");
+      return data.data as { plan: { tier: string }; proTrialAvailable?: boolean };
+    },
+  });
 
   const { data: trips = [], isLoading } = useQuery({
     queryKey: ["trips"],
@@ -79,6 +88,21 @@ export default function DashboardPage() {
           </Button>
         </Link>
       </PageHeader>
+
+      {subscription?.proTrialAvailable && (
+        <div className="flex items-start gap-3 rounded-xl border border-brand/25 bg-brand/10 p-4">
+          <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-brand-light" />
+          <div>
+            <p className="text-sm font-medium text-brand-light">Your first trip unlocks Pro features free</p>
+            <p className="mt-1 text-xs text-neutral-400">
+              Custom splits, receipt OCR, and CSV exports — included on your first trip at no cost.
+            </p>
+            <Link href="/trips" className="mt-2 inline-block text-xs font-medium text-brand-light hover:underline">
+              Create your Pro trial trip →
+            </Link>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatCard label="Total spent" value={formatCurrency(totalSpent)} icon={Wallet} valueClassName="text-emerald-400" />

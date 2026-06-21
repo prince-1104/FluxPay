@@ -145,7 +145,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Sparkles className="h-4 w-4" />
               Upgrade to Pro
             </div>
-            <p className="mt-1 text-xs text-neutral-500">Unlock OCR, exports & custom splits</p>
+            <p className="mt-1 text-xs text-neutral-500">
+              Your first trip includes Pro features free
+            </p>
             <Link href="/pricing">
               <Button size="sm" className="mt-3 w-full gradient-brand border-0 text-xs h-8">
                 View plans

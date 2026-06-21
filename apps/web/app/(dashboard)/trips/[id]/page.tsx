@@ -217,6 +217,11 @@ export default function TripDetailPage() {
           <div>
             <div className="flex items-center gap-3 flex-wrap">
               <h1 className="text-2xl font-bold md:text-3xl">{trip.name}</h1>
+              {trip.isProTrial && (
+                <Badge variant="outline" className="border-brand/30 text-brand-light bg-brand/10">
+                  Pro trial
+                </Badge>
+              )}
               <Badge variant="outline" className={statusStyle[trip.status] ?? statusStyle.PLANNING}>
                 {trip.status}
               </Badge>

@@ -8,6 +8,45 @@ export function decimalToNumber(value: Prisma.Decimal | number | null | undefine
   return value.toNumber();
 }
 
+/** First owned non-archived trip gets Pro feature flags while the owner stays on FREE. */
+export async function getProTrialTripId(userId: string): Promise<string | null> {
+  const plan = await getUserPlanLimits(userId);
+  if (plan.tier !== 'FREE') return null;
+
+  const firstTrip = await prisma.trip.findFirst({
+    where: { ownerId: userId, status: { not: 'ARCHIVED' } },
+    orderBy: { createdAt: 'asc' },
+    select: { id: true },
+  });
+  return firstTrip?.id ?? null;
+}
+
+/** Plan limits for a specific trip (Pro trial trip inherits Pro feature flags). */
+export async function getEffectivePlanForTrip(ownerId: string, tripId: string): Promise<PlanLimits> {
+  const basePlan = await getUserPlanLimits(ownerId);
+  if (basePlan.tier !== 'FREE') return basePlan;
+
+  const proTrialTripId = await getProTrialTripId(ownerId);
+  if (proTrialTripId !== tripId) return basePlan;
+
+  const proPlan = await prisma.subscriptionPlan.findUniqueOrThrow({ where: { tier: 'PRO' } });
+  return {
+    tier: basePlan.tier,
+    maxTrips: basePlan.maxTrips,
+    maxMembersPerTrip: proPlan.maxMembersPerTrip,
+    canScanReceipts: true,
+    canExport: true,
+    canCustomSplit: true,
+    canCurrencyConvert: true,
+    canAISettle: false,
+  };
+}
+
+export async function isProTrialTrip(tripId: string, ownerId: string): Promise<boolean> {
+  const proTrialTripId = await getProTrialTripId(ownerId);
+  return proTrialTripId === tripId;
+}
+
 export async function getUserPlanLimits(userId: string): Promise<PlanLimits> {
   const subscription = await prisma.userSubscription.findUnique({
     where: { userId },

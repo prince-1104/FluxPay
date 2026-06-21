@@ -2,7 +2,12 @@ import { prisma } from '@settl/database';
 import { SubscriptionTier } from '@settl/types';
 import { env } from '../config/env.js';
 import { NotFoundError, AppError } from '../utils/errors.js';
-import { getUserPlanLimits, decimalToNumber } from './subscription.service.js';
+import {
+  getUserPlanLimits,
+  getProTrialTripId,
+  countOwnedTrips,
+  decimalToNumber,
+} from './subscription.service.js';
 
 export async function listPlans() {
   const plans = await prisma.subscriptionPlan.findMany({ orderBy: { priceMonthly: 'asc' } });
@@ -16,7 +21,15 @@ export async function listPlans() {
 export async function getCurrentSubscription(userId: string) {
   const subscription = await prisma.userSubscription.findUnique({ where: { userId } });
   const planLimits = await getUserPlanLimits(userId);
-  return { subscription, plan: planLimits };
+  const proTrialTripId = await getProTrialTripId(userId);
+  const ownedTrips = await countOwnedTrips(userId);
+  return {
+    subscription,
+    plan: planLimits,
+    proTrialTripId,
+    /** True when the user's next owned trip will receive Pro features (FREE tier only). */
+    proTrialAvailable: planLimits.tier === 'FREE' && ownedTrips === 0,
+  };
 }
 
 export async function createCheckoutSession(userId: string, tier: SubscriptionTier, billing: 'monthly' | 'yearly') {

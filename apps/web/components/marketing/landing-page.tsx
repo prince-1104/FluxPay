@@ -51,9 +51,9 @@ const features = [
 ];
 
 const plans = [
-  { name: "Free", price: "$0", desc: "2 trips · 5 members", highlight: false },
-  { name: "Pro", price: "$299", desc: "10 trips · OCR & exports", highlight: true },
-  { name: "Premium", price: "$599", desc: "Unlimited · AI settle", highlight: false },
+  { name: "Free", price: "₹0", desc: "2 trips · 1 Pro trip included", highlight: false },
+  { name: "Pro", price: "₹29", desc: "10 trips · OCR & exports", highlight: true },
+  { name: "Premium", price: "₹299", desc: "Unlimited · AI settle", highlight: false },
 ];
 
 export function LandingPage() {
@@ -74,7 +74,7 @@ export function LandingPage() {
           >
             <span className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-1.5 text-xs font-medium text-brand-light">
               <Sparkles className="h-3.5 w-3.5" />
-              Premium group expense splitting
+              First trip free with Pro features
             </span>
             <h1 className="mt-8 text-4xl font-extrabold tracking-tight md:text-6xl lg:text-7xl">
               Split trip costs{" "}
@@ -105,7 +105,9 @@ export function LandingPage() {
               </Link>
               <MobileAppDownloadButton size="lg" className="w-full sm:w-auto sm:shrink-0" />
             </div>
-            <p className="mt-4 text-xs text-neutral-600">No credit card required · Free plan forever</p>
+            <p className="mt-4 text-xs text-neutral-600">
+              No credit card required · Free plan forever · First trip unlocks Pro features
+            </p>
           </motion.div>
 
           <DashboardPreview3D />
@@ -140,7 +142,9 @@ export function LandingPage() {
         <div className="mx-auto max-w-5xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold md:text-4xl">Simple, transparent pricing</h2>
-            <p className="mt-4 text-neutral-400">Start free. Upgrade when your group grows.</p>
+            <p className="mt-4 text-neutral-400">
+              Start free — your first trip includes Pro features at no cost.
+            </p>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
             {plans.map((plan) => (
@@ -157,6 +161,11 @@ export function LandingPage() {
                   <span className="text-sm font-normal text-neutral-500">/mo</span>
                 </p>
                 <p className="mt-2 text-sm text-neutral-400">{plan.desc}</p>
+                {plan.name === "Free" && (
+                  <p className="mt-3 rounded-lg border border-brand/25 bg-brand/10 px-3 py-2 text-xs text-brand-light">
+                    Custom splits, OCR & exports on your first trip
+                  </p>
+                )}
               </div>
             ))}
           </div>

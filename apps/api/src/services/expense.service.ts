@@ -3,7 +3,7 @@ import { resolveSplits, assertFeature } from '@settl/utils';
 import { NotFoundError, ForbiddenError } from '../utils/errors.js';
 import {
   assertTripMember,
-  getUserPlanLimits,
+  getEffectivePlanForTrip,
   serializeExpense,
   decimalToNumber,
 } from './subscription.service.js';
@@ -75,7 +75,7 @@ export async function createExpense(
 ) {
   await assertTripMember(tripId, userId);
   const trip = await prisma.trip.findUniqueOrThrow({ where: { id: tripId } });
-  const ownerPlan = await getUserPlanLimits(trip.ownerId);
+  const ownerPlan = await getEffectivePlanForTrip(trip.ownerId, tripId);
 
   const hasCustomSplit = data.splits.some((s) => s.splitType !== 'EQUAL');
   if (hasCustomSplit) assertFeature(ownerPlan, 'customSplit');
@@ -177,7 +177,7 @@ export async function updateExpense(
 
   if (data.splits) {
     const trip = await prisma.trip.findUniqueOrThrow({ where: { id: tripId } });
-    const ownerPlan = await getUserPlanLimits(trip.ownerId);
+    const ownerPlan = await getEffectivePlanForTrip(trip.ownerId, tripId);
     const hasCustomSplit = data.splits.some((s) => s.splitType !== 'EQUAL');
     if (hasCustomSplit) assertFeature(ownerPlan, 'customSplit');
 

@@ -31,9 +31,10 @@ const tierIcons: Record<string, typeof Sparkles> = {
   PREMIUM: Crown,
 };
 
-const allFeatures = (plan: Plan) => [
+const allFeatures = (plan: Plan, tier: string) => [
   plan.maxTrips < 0 ? "Unlimited trips" : `${plan.maxTrips} active trips`,
   plan.maxMembersPerTrip < 0 ? "Unlimited members" : `${plan.maxMembersPerTrip} members per trip`,
+  ...(tier === "FREE" ? ["1 trip with full Pro features"] : []),
   "Equal expense splits",
   ...(plan.canCustomSplit ? ["Custom & percentage splits"] : []),
   ...(plan.canScanReceipts ? ["Receipt OCR scanning"] : []),
@@ -139,7 +140,7 @@ export default function PricingPage() {
                 <span className="text-sm font-normal text-neutral-500">/{yearly ? "yr" : "mo"}</span>
               </p>
               <ul className="mt-6 space-y-3 flex-1">
-                {allFeatures(plan).map((f) => (
+                {allFeatures(plan, plan.tier).map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm text-neutral-400">
                     <Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
                     {f}

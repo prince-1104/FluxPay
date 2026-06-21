@@ -18,7 +18,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           </Link>
           <blockquote className="mt-16">
             <p className="text-2xl font-medium leading-relaxed text-neutral-300">
-              &ldquo;Finally stopped being the person who tracks every dollar on trips. Settl just works.&rdquo;
+              &ldquo;Finally stopped being the person who tracks every rupee on trips. Settl just works.&rdquo;
             </p>
             <footer className="mt-4 text-sm text-neutral-500">— Travel group admin, Mumbai</footer>
           </blockquote>
@@ -26,7 +26,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="grid grid-cols-3 gap-4 text-center">
           {[
             { v: "10K+", l: "Trips split" },
-            { v: "$2M+", l: "Settled" },
+            { v: "₹2Cr+", l: "Settled" },
             { v: "4.9★", l: "Rating" },
           ].map((s) => (
             <div key={s.l} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">

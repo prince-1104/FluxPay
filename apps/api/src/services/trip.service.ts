@@ -7,6 +7,8 @@ import {
   countOwnedTrips,
   countTripMembers,
   getUserPlanLimits,
+  getEffectivePlanForTrip,
+  isProTrialTrip,
   serializeTrip,
   decimalToNumber,
 } from './subscription.service.js';
@@ -30,15 +32,21 @@ export async function listTrips(userId: string) {
     orderBy: { joinedAt: 'desc' },
   });
 
-  return memberships.map(({ trip }) => ({
-    ...serializeTrip(trip),
-    members: trip.members.map((m) => ({
-      ...m,
-      preContribution: decimalToNumber(m.preContribution),
-    })),
-    memberCount: trip.members.length,
-    expenseTotal: trip.expenses.reduce((sum, e) => sum + decimalToNumber(e.totalAmount), 0),
-  }));
+  return Promise.all(
+    memberships.map(async ({ trip }) => {
+      const proTrial = await isProTrialTrip(trip.id, trip.ownerId);
+      return {
+        ...serializeTrip(trip),
+        members: trip.members.map((m) => ({
+          ...m,
+          preContribution: decimalToNumber(m.preContribution),
+        })),
+        memberCount: trip.members.length,
+        expenseTotal: trip.expenses.reduce((sum, e) => sum + decimalToNumber(e.totalAmount), 0),
+        isProTrial: proTrial,
+      };
+    })
+  );
 }
 
 export async function getTrip(tripId: string, userId: string) {
@@ -54,6 +62,8 @@ export async function getTrip(tripId: string, userId: string) {
     },
   });
 
+  const proTrial = await isProTrialTrip(tripId, trip.ownerId);
+
   return {
     ...serializeTrip(trip),
     members: trip.members.map((m) => ({
@@ -62,6 +72,7 @@ export async function getTrip(tripId: string, userId: string) {
     })),
     memberCount: trip.members.length,
     expenseTotal: trip.expenses.reduce((sum, e) => sum + decimalToNumber(e.totalAmount), 0),
+    isProTrial: proTrial,
   };
 }
 
@@ -153,7 +164,7 @@ export async function joinTrip(userId: string, inviteCode: string, displayName?:
     throw new ForbiddenError('Already a member of this trip');
   }
 
-  const ownerPlan = await getUserPlanLimits(trip.ownerId);
+  const ownerPlan = await getEffectivePlanForTrip(trip.ownerId, trip.id);
   const memberCount = await countTripMembers(trip.id);
   assertMemberLimit(memberCount, ownerPlan);
 
@@ -297,7 +308,7 @@ export async function addTripMember(
     throw new ForbiddenError('User is already a member of this trip');
   }
 
-  const ownerPlan = await getUserPlanLimits(trip.ownerId);
+  const ownerPlan = await getEffectivePlanForTrip(trip.ownerId, trip.id);
   const memberCount = await countTripMembers(tripId);
   assertMemberLimit(memberCount, ownerPlan);
 

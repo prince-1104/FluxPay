@@ -1,0 +1,6 @@
+# Keep monorepo packages; skip heavy web build artifacts
+apps/web/.next
+apps/web/node_modules
+apps/api/dist
+**/.turbo
+**/*.log

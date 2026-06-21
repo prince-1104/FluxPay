@@ -1,10 +1,20 @@
 import { useCallback, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, RefreshControl } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  RefreshControl,
+  Modal,
+  TextInput,
+  Alert,
+} from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import { formatCurrency } from '@settl/utils';
-import { apiRequest } from '../lib/api';
-import { useAuth } from '../context/auth';
+import { apiRequest, ApiError } from '../lib/api';
+import { shared } from '../theme/styles';
+import { colors } from '../theme/colors';
 
 type Trip = {
   id: string;
@@ -15,12 +25,16 @@ type Trip = {
   memberCount?: number;
 };
 
-type Props = NativeStackScreenProps<any, 'Trips'>;
+type Props = NativeStackScreenProps<any, 'TripsList'>;
 
 export default function TripsScreen({ navigation }: Props) {
-  const { logout } = useAuth();
   const [trips, setTrips] = useState<Trip[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [joinOpen, setJoinOpen] = useState(false);
+  const [tripName, setTripName] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const loadTrips = useCallback(async () => {
     setRefreshing(true);
@@ -36,37 +50,118 @@ export default function TripsScreen({ navigation }: Props) {
 
   useFocusEffect(useCallback(() => { loadTrips(); }, [loadTrips]));
 
+  async function handleCreate() {
+    if (!tripName.trim()) return;
+    setSubmitting(true);
+    try {
+      await apiRequest('/trips', {
+        method: 'POST',
+        body: JSON.stringify({ name: tripName.trim(), currency: 'INR' }),
+      });
+      setCreateOpen(false);
+      setTripName('');
+      loadTrips();
+    } catch (e) {
+      Alert.alert('Error', (e as ApiError).message);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleJoin() {
+    if (!inviteCode.trim()) return;
+    setSubmitting(true);
+    try {
+      await apiRequest('/trips/join', {
+        method: 'POST',
+        body: JSON.stringify({ inviteCode: inviteCode.trim() }),
+      });
+      setJoinOpen(false);
+      setInviteCode('');
+      loadTrips();
+      Alert.alert('Success', 'Joined trip!');
+    } catch (e) {
+      Alert.alert('Error', (e as ApiError).message);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Your Trips</Text>
-        <TouchableOpacity onPress={logout}><Text style={styles.logout}>Logout</Text></TouchableOpacity>
+    <View style={shared.screen}>
+      <View style={{ flexDirection: 'row', gap: 8, padding: 16, paddingBottom: 0 }}>
+        <TouchableOpacity style={[shared.button, { flex: 1 }]} onPress={() => setCreateOpen(true)}>
+          <Text style={shared.buttonText}>+ New trip</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[shared.buttonOutline, { flex: 1 }]} onPress={() => setJoinOpen(true)}>
+          <Text style={shared.buttonOutlineText}>Join code</Text>
+        </TouchableOpacity>
       </View>
+
       <FlatList
         data={trips}
         keyExtractor={(item) => item.id}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={loadTrips} tintColor="#7C3AED" />}
-        ListEmptyComponent={<Text style={styles.empty}>No trips yet</Text>}
+        contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={loadTrips} tintColor={colors.brand} />}
+        ListEmptyComponent={<Text style={shared.empty}>No trips yet</Text>}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('TripDetail', { tripId: item.id, tripName: item.name })}>
-            <Text style={styles.cardTitle}>{item.name}</Text>
-            <Text style={styles.cardMeta}>{item.memberCount ?? 0} members · {item.status}</Text>
-            <Text style={styles.cardAmount}>{formatCurrency(item.expenseTotal ?? 0, item.currency)}</Text>
+          <TouchableOpacity
+            style={shared.card}
+            onPress={() => navigation.navigate('TripDetail', { tripId: item.id, tripName: item.name })}
+          >
+            <Text style={shared.cardTitle}>{item.name}</Text>
+            <Text style={shared.cardMeta}>
+              {item.memberCount ?? 0} members · {item.status}
+            </Text>
+            <Text style={{ color: colors.emerald, fontSize: 15, fontWeight: '600', marginTop: 8 }}>
+              {formatCurrency(item.expenseTotal ?? 0, item.currency)}
+            </Text>
           </TouchableOpacity>
         )}
       />
+
+      <Modal visible={createOpen} animationType="slide" transparent>
+        <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.6)' }}>
+          <View style={{ backgroundColor: colors.surface, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20 }}>
+            <Text style={{ color: colors.text, fontSize: 18, fontWeight: '600', marginBottom: 16 }}>Create trip</Text>
+            <TextInput
+              style={shared.input}
+              placeholder="Trip name"
+              placeholderTextColor={colors.textMuted}
+              value={tripName}
+              onChangeText={setTripName}
+            />
+            <TouchableOpacity style={shared.button} onPress={handleCreate} disabled={submitting}>
+              <Text style={shared.buttonText}>{submitting ? 'Creating…' : 'Create'}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{ marginTop: 12, alignItems: 'center' }} onPress={() => setCreateOpen(false)}>
+              <Text style={{ color: colors.textMuted }}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={joinOpen} animationType="slide" transparent>
+        <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.6)' }}>
+          <View style={{ backgroundColor: colors.surface, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20 }}>
+            <Text style={{ color: colors.text, fontSize: 18, fontWeight: '600', marginBottom: 16 }}>Join with invite code</Text>
+            <TextInput
+              style={shared.input}
+              placeholder="Invite code"
+              placeholderTextColor={colors.textMuted}
+              value={inviteCode}
+              onChangeText={setInviteCode}
+              autoCapitalize="none"
+            />
+            <TouchableOpacity style={shared.button} onPress={handleJoin} disabled={submitting}>
+              <Text style={shared.buttonText}>{submitting ? 'Joining…' : 'Join trip'}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{ marginTop: 12, alignItems: 'center' }} onPress={() => setJoinOpen(false)}>
+              <Text style={{ color: colors.textMuted }}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#080810' },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16 },
-  title: { fontSize: 20, fontWeight: '700', color: '#F8F8FF' },
-  logout: { color: '#A78BFA' },
-  empty: { color: '#666', textAlign: 'center', marginTop: 40 },
-  card: { backgroundColor: '#0F0F1A', marginHorizontal: 16, marginBottom: 12, padding: 16, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' },
-  cardTitle: { color: '#F8F8FF', fontSize: 16, fontWeight: '600' },
-  cardMeta: { color: '#888', fontSize: 13, marginTop: 4 },
-  cardAmount: { color: '#10B981', fontSize: 15, fontWeight: '600', marginTop: 8 },
-});

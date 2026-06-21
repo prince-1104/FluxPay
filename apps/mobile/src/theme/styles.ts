@@ -1,0 +1,143 @@
+import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { colors } from '../theme/colors';
+
+export const shared = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: colors.bg,
+  } as ViewStyle,
+  content: {
+    padding: 16,
+    paddingBottom: 32,
+  } as ViewStyle,
+  card: {
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+  } as ViewStyle,
+  cardTitle: {
+    color: colors.text,
+    fontSize: 16,
+    fontWeight: '600',
+  } as TextStyle,
+  cardMeta: {
+    color: colors.textMuted,
+    fontSize: 13,
+    marginTop: 4,
+  } as TextStyle,
+  sectionTitle: {
+    color: colors.brandLight,
+    fontSize: 13,
+    fontWeight: '600',
+    marginBottom: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  } as TextStyle,
+  empty: {
+    color: colors.textMuted,
+    textAlign: 'center',
+    marginTop: 32,
+    fontSize: 14,
+  } as TextStyle,
+  input: {
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    padding: 14,
+    color: colors.text,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    fontSize: 15,
+  } as TextStyle,
+  button: {
+    backgroundColor: colors.brand,
+    borderRadius: 12,
+    padding: 14,
+    alignItems: 'center',
+  } as ViewStyle,
+  buttonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 15,
+  } as TextStyle,
+  buttonOutline: {
+    backgroundColor: 'transparent',
+    borderRadius: 12,
+    padding: 14,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
+  } as ViewStyle,
+  buttonOutlineText: {
+    color: colors.brandLight,
+    fontWeight: '600',
+    fontSize: 15,
+  } as TextStyle,
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  } as ViewStyle,
+  badge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(124,58,237,0.3)',
+  } as ViewStyle,
+  badgeText: {
+    color: colors.brandLight,
+    fontSize: 11,
+    fontWeight: '600',
+  } as TextStyle,
+  fab: {
+    position: 'absolute',
+    right: 16,
+    bottom: 16,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: colors.brand,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 6,
+    shadowColor: colors.brand,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+  } as ViewStyle,
+  fabText: {
+    color: '#fff',
+    fontSize: 28,
+    fontWeight: '300',
+    lineHeight: 30,
+  } as TextStyle,
+  tabBar: {
+    flexDirection: 'row',
+    backgroundColor: colors.surface,
+    borderRadius: 10,
+    padding: 4,
+    marginBottom: 16,
+  } as ViewStyle,
+  tab: {
+    flex: 1,
+    paddingVertical: 8,
+    alignItems: 'center',
+    borderRadius: 8,
+  } as ViewStyle,
+  tabActive: {
+    backgroundColor: 'rgba(124,58,237,0.2)',
+  } as ViewStyle,
+  tabText: {
+    color: colors.textMuted,
+    fontSize: 12,
+    fontWeight: '500',
+  } as TextStyle,
+  tabTextActive: {
+    color: colors.brandLight,
+    fontWeight: '600',
+  } as TextStyle,
+});

@@ -1,27 +1,49 @@
 {
   "expo": {
-    "name": "Settl",
-    "slug": "settl-mobile",
+    "name": "FluxPay",
+    "slug": "fluxpay",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
+    "scheme": "fluxpay",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#080810"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.noobers.fluxpay"
     },
     "android": {
+      "package": "com.noobers.fluxpay",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#080810"
       }
     },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "minSdkVersion": 24
+          }
+        }
+      ]
+    ],
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "48dad9ee-2a29-43cb-9aa8-1146b0f616a3"
+      },
+      "apiUrl": "http://10.0.2.2:4000/api/v1"
+    },
+    "owner": "noobers-organization"
   }
 }

@@ -8,7 +8,6 @@ import { useAuthStore } from "@/stores/auth-store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -29,32 +28,28 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="border-white/10 bg-surface-elevated">
-      <CardHeader>
-        <CardTitle>Sign in</CardTitle>
-        <CardDescription>Enter your credentials to access your trips</CardDescription>
-      </CardHeader>
-      <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="bg-surface border-white/10" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="bg-surface border-white/10" />
-          </div>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-4">
-          <Button type="submit" className="w-full gradient-brand border-0" disabled={isLoading}>
-            {isLoading ? "Signing in..." : "Sign in"}
-          </Button>
-          <p className="text-sm text-neutral-500 text-center">
-            No account?{" "}
-            <Link href="/register" className="text-brand-light hover:underline">Create one</Link>
-          </p>
-        </CardFooter>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold">Welcome back</h1>
+        <p className="mt-1 text-sm text-neutral-400">Sign in to manage your trips and settlements</p>
+      </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="bg-surface border-white/10 h-11" />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="bg-surface border-white/10 h-11" />
+        </div>
+        <Button type="submit" className="w-full h-11 gradient-brand border-0 shadow-lg shadow-brand/20" disabled={isLoading}>
+          {isLoading ? "Signing in…" : "Sign in"}
+        </Button>
       </form>
-    </Card>
+      <p className="text-center text-sm text-neutral-500">
+        No account?{" "}
+        <Link href="/register" className="text-brand-light hover:underline font-medium">Create one free</Link>
+      </p>
+    </div>
   );
 }

@@ -4,26 +4,17 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Check } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function RegisterPage() {
   const router = useRouter();
   const register = useAuthStore((s) => s.register);
   const isLoading = useAuthStore((s) => s.isLoading);
-  const [form, setForm] = useState({
-    name: "",
-    username: "",
-    email: "",
-    password: "",
-  });
-
-  function update(field: string, value: string) {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  }
+  const [form, setForm] = useState({ name: "", username: "", email: "", password: "" });
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -37,41 +28,46 @@ export default function RegisterPage() {
   }
 
   return (
-    <Card className="border-white/10 bg-surface-elevated">
-      <CardHeader>
-        <CardTitle>Create account</CardTitle>
-        <CardDescription>Start splitting trip expenses with your group</CardDescription>
-      </CardHeader>
-      <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Full name</Label>
-            <Input id="name" value={form.name} onChange={(e) => update("name", e.target.value)} required className="bg-surface border-white/10" />
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold">Create your account</h1>
+        <p className="mt-1 text-sm text-neutral-400">Start splitting expenses in under a minute</p>
+      </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {[
+          { key: "name", label: "Full name", placeholder: "Alice Cooper" },
+          { key: "username", label: "Username", placeholder: "alice_cooper" },
+          { key: "email", label: "Email", type: "email", placeholder: "you@email.com" },
+          { key: "password", label: "Password", type: "password", placeholder: "Min 8 characters" },
+        ].map(({ key, label, type, placeholder }) => (
+          <div key={key} className="space-y-2">
+            <Label htmlFor={key}>{label}</Label>
+            <Input
+              id={key}
+              type={type ?? "text"}
+              placeholder={placeholder}
+              value={form[key as keyof typeof form]}
+              onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+              required
+              className="bg-surface border-white/10 h-11"
+            />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
-            <Input id="username" value={form.username} onChange={(e) => update("username", e.target.value)} required className="bg-surface border-white/10" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" value={form.email} onChange={(e) => update("email", e.target.value)} required className="bg-surface border-white/10" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" value={form.password} onChange={(e) => update("password", e.target.value)} required className="bg-surface border-white/10" />
-            <p className="text-xs text-neutral-500">Min 8 chars, uppercase, lowercase, and number</p>
-          </div>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-4">
-          <Button type="submit" className="w-full gradient-brand border-0" disabled={isLoading}>
-            {isLoading ? "Creating..." : "Create account"}
-          </Button>
-          <p className="text-sm text-neutral-500 text-center">
-            Already have an account?{" "}
-            <Link href="/login" className="text-brand-light hover:underline">Sign in</Link>
-          </p>
-        </CardFooter>
+        ))}
+        <ul className="text-xs text-neutral-500 space-y-1">
+          {["Free forever plan", "Unlimited settlements on free tier", "No credit card"].map((t) => (
+            <li key={t} className="flex items-center gap-2">
+              <Check className="h-3.5 w-3.5 text-emerald-400" /> {t}
+            </li>
+          ))}
+        </ul>
+        <Button type="submit" className="w-full h-11 gradient-brand border-0 shadow-lg shadow-brand/20" disabled={isLoading}>
+          {isLoading ? "Creating…" : "Create account"}
+        </Button>
       </form>
-    </Card>
+      <p className="text-center text-sm text-neutral-500">
+        Already have an account?{" "}
+        <Link href="/login" className="text-brand-light hover:underline font-medium">Sign in</Link>
+      </p>
+    </div>
   );
 }

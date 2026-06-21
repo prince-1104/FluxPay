@@ -12,6 +12,8 @@
   --color-text-muted: rgba(248,248,255,0.5);
   --gradient-brand: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%);
   --gradient-accent: linear-gradient(135deg, #F59E0B 0%, #FCD34D 100%);
+  --gradient-mesh: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124,58,237,0.25), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(245,158,11,0.08), transparent);
 
   --background: 240 20% 4%;
   --foreground: 240 5% 96%;
@@ -37,6 +39,7 @@
 
 html {
   color-scheme: dark;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -51,10 +54,55 @@ body {
   }
 }
 
+.mesh-bg {
+  background-color: var(--color-bg);
+  background-image: var(--gradient-mesh);
+  background-attachment: fixed;
+}
+
 .gradient-brand {
   background: var(--gradient-brand);
 }
 
+.gradient-text {
+  @apply bg-gradient-to-r from-brand via-brand-light to-gold-light bg-clip-text text-transparent;
+}
+
 .glass {
-  @apply bg-surface/80 backdrop-blur-md border border-white/10;
+  @apply bg-surface/70 backdrop-blur-xl border border-white/10;
+}
+
+.glass-card {
+  @apply rounded-2xl border border-white/10 bg-surface-elevated/80 backdrop-blur-sm shadow-xl shadow-black/20;
+}
+
+.saas-card {
+  @apply rounded-xl border border-white/[0.08] bg-gradient-to-b from-white/[0.04] to-transparent transition-all duration-300;
+}
+
+.saas-card-hover {
+  @apply saas-card hover:border-brand/30 hover:shadow-lg hover:shadow-brand/5;
+}
+
+.shimmer-line {
+  @apply h-4 rounded-md bg-white/5 animate-pulse;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+.glow-orb {
+  @apply absolute rounded-full blur-3xl;
+  animation: glow-pulse 6s ease-in-out infinite;
 }

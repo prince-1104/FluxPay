@@ -21,6 +21,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
+import { MobileAppDownloadIcon } from "@/components/shared/mobile-app-download-icon";
+import { MOBILE_APK_FILENAME, MOBILE_APK_URL } from "@/lib/mobile-app";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -205,6 +207,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-1 shrink-0">
+            <a
+              href={MOBILE_APK_URL}
+              download={MOBILE_APK_FILENAME}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group rounded-xl p-2 text-neutral-400 transition-colors hover:bg-brand/10 touch-manipulation"
+              aria-label="Download Android app"
+              title="Download Android app"
+            >
+              <MobileAppDownloadIcon />
+            </a>
             <Link
               href="/notifications"
               className="relative rounded-xl p-2.5 text-neutral-400 hover:bg-white/5 hover:text-white touch-manipulation lg:hidden"

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { formatCurrency } from "@settl/utils";
+import { formatCurrency } from "@/lib/currency";
 import type { TripWithMembers } from "@settl/types";
 import { api, getApiError } from "@/lib/api";
 import { Button } from "@/components/ui/button";

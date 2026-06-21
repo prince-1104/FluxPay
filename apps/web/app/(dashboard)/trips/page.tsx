@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Plus, Link2, Map, Search, Users } from "lucide-react";
 import { api, getApiError } from "@/lib/api";
-import { formatCurrency } from "@settl/utils";
+import { formatCurrency } from "@/lib/currency";
 import type { TripWithMembers } from "@settl/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

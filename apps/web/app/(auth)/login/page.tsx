@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth-store";
 import { Button } from "@/components/ui/button";
@@ -12,10 +12,17 @@ import { MobileAppDownloadButton } from "@/components/marketing/mobile-app-downl
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const login = useAuthStore((s) => s.login);
   const isLoading = useAuthStore((s) => s.isLoading);
   const [email, setEmail] = useState("alice@settl.com");
   const [password, setPassword] = useState("Password123!");
+
+  useEffect(() => {
+    if (searchParams.get("reason") === "session-expired") {
+      toast.message("Session expired. Please sign in again.");
+    }
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

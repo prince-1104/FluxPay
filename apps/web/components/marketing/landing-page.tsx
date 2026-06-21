@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { MarketingHeader } from "./marketing-header";
 import { MarketingFooter } from "./marketing-footer";
 import { MobileAppDownloadButton } from "./mobile-app-download-button";
+import { DashboardPreview3D } from "./dashboard-preview-3d";
 
 const features = [
   {
@@ -50,9 +51,9 @@ const features = [
 ];
 
 const plans = [
-  { name: "Free", price: "₹0", desc: "2 trips · 5 members", highlight: false },
-  { name: "Pro", price: "₹299", desc: "10 trips · OCR & exports", highlight: true },
-  { name: "Premium", price: "₹599", desc: "Unlimited · AI settle", highlight: false },
+  { name: "Free", price: "$0", desc: "2 trips · 5 members", highlight: false },
+  { name: "Pro", price: "$299", desc: "10 trips · OCR & exports", highlight: true },
+  { name: "Premium", price: "$599", desc: "Unlimited · AI settle", highlight: false },
 ];
 
 export function LandingPage() {
@@ -83,53 +84,31 @@ export function LandingPage() {
             <p className="mx-auto mt-6 max-w-2xl text-lg text-neutral-400 md:text-xl">
               Settl helps friend groups and travel teams track shared expenses, calculate who owes what, and settle up — without the spreadsheet chaos.
             </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:flex-wrap">
-              <Link href="/register">
-                <Button size="lg" className="gradient-brand border-0 px-8 text-base shadow-xl shadow-brand/30">
+            <div className="mt-10 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center sm:gap-4">
+              <Link href="/register" className="w-full sm:w-auto sm:shrink-0">
+                <Button
+                  size="lg"
+                  className="group h-12 w-full rounded-full border-0 px-10 text-base font-semibold shadow-xl shadow-brand/30 transition-all duration-200 hover:scale-[1.02] hover:shadow-brand/45 gradient-brand sm:w-auto"
+                >
                   Start for free
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
                 </Button>
               </Link>
-              <Link href="/login">
-                <Button size="lg" variant="outline" className="border-white/15 bg-white/5 px-8 text-base hover:bg-white/10">
+              <Link href="/login" className="w-full sm:w-auto sm:shrink-0">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="h-12 w-full rounded-full border border-white/20 bg-white/5 px-10 text-base font-medium backdrop-blur-md transition-all duration-200 hover:scale-[1.02] hover:border-white/35 hover:bg-white/10 sm:w-auto"
+                >
                   View demo
                 </Button>
               </Link>
-              <MobileAppDownloadButton size="lg" />
+              <MobileAppDownloadButton size="lg" className="w-full sm:w-auto sm:shrink-0" />
             </div>
             <p className="mt-4 text-xs text-neutral-600">No credit card required · Free plan forever</p>
           </motion.div>
 
-          {/* Dashboard preview mockup */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="mx-auto mt-16 max-w-4xl"
-          >
-            <div className="glass-card overflow-hidden p-1 animate-float">
-              <div className="rounded-xl bg-surface p-6 text-left">
-                <div className="flex items-center gap-2 mb-6">
-                  <div className="h-3 w-3 rounded-full bg-red-500/80" />
-                  <div className="h-3 w-3 rounded-full bg-gold/80" />
-                  <div className="h-3 w-3 rounded-full bg-emerald-500/80" />
-                </div>
-                <div className="grid gap-4 md:grid-cols-3">
-                  {[
-                    { label: "Total spent", value: "₹12,450", color: "text-emerald-400" },
-                    { label: "Active trips", value: "3", color: "text-brand-light" },
-                    { label: "Pending settlements", value: "₹2,100", color: "text-gold" },
-                  ].map((s) => (
-                    <div key={s.label} className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
-                      <p className="text-xs text-neutral-500">{s.label}</p>
-                      <p className={`mt-1 text-2xl font-bold ${s.color}`}>{s.value}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-4 h-32 rounded-lg border border-white/10 bg-gradient-to-r from-brand/10 via-transparent to-gold/10" />
-              </div>
-            </div>
-          </motion.div>
+          <DashboardPreview3D />
         </div>
       </section>
 

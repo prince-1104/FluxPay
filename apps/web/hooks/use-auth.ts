@@ -9,7 +9,7 @@ export function useRequireAuth() {
   const { user, isInitialized, initialize } = useAuthStore();
 
   useEffect(() => {
-    initialize();
+    void initialize();
   }, [initialize]);
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export function useRedirectIfAuth() {
   const { user, isInitialized, initialize } = useAuthStore();
 
   useEffect(() => {
-    initialize();
+    void initialize();
   }, [initialize]);
 
   useEffect(() => {

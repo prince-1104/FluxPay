@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { resolveSplits, formatCurrency, SplitValidationError } from "@settl/utils";
+import { resolveSplits, SplitValidationError } from "@settl/utils";
+import { formatCurrency } from "@/lib/currency";
 import type { SplitType, TripWithMembers } from "@settl/types";
 import { api, getApiError } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth-store";

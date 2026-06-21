@@ -11,6 +11,41 @@ export const api = axios.create({
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
 
+type SessionListener = () => void;
+const sessionExpiredListeners = new Set<SessionListener>();
+
+export function onSessionExpired(listener: SessionListener) {
+  sessionExpiredListeners.add(listener);
+  return () => {
+    sessionExpiredListeners.delete(listener);
+  };
+}
+
+function emitSessionExpired() {
+  sessionExpiredListeners.forEach((listener) => listener());
+}
+
+function decodeJwtExp(token: string): number | null {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1] ?? "")) as { exp?: number };
+    return payload.exp ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export function isAccessTokenExpired(token: string, bufferSeconds = 30): boolean {
+  const exp = decodeJwtExp(token);
+  if (!exp) return true;
+  return Date.now() >= exp * 1000 - bufferSeconds * 1000;
+}
+
+export function clearSession() {
+  setTokens(null);
+  setStoredUser(null);
+  emitSessionExpired();
+}
+
 export function setTokens(tokens: AuthTokens | null) {
   if (typeof window === 'undefined') return;
   if (tokens) {
@@ -66,7 +101,10 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 let refreshPromise: Promise<AuthTokens | null> | null = null;
 
 async function refreshAccessToken(): Promise<AuthTokens | null> {
-  if (!refreshToken) return null;
+  if (!refreshToken) {
+    clearSession();
+    return null;
+  }
   try {
     const { data } = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
     const tokens = data.data.tokens as AuthTokens;
@@ -75,8 +113,30 @@ async function refreshAccessToken(): Promise<AuthTokens | null> {
     setStoredUser(user);
     return tokens;
   } catch {
-    setTokens(null);
-    setStoredUser(null);
+    clearSession();
+    return null;
+  }
+}
+
+export async function ensureValidSession(): Promise<AuthUser | null> {
+  const tokens = loadStoredTokens();
+  if (!tokens?.accessToken) {
+    clearSession();
+    return null;
+  }
+
+  if (isAccessTokenExpired(tokens.accessToken)) {
+    const refreshed = await refreshAccessToken();
+    if (!refreshed) return null;
+  }
+
+  try {
+    const { data } = await api.get("/auth/me");
+    const user = data.data as AuthUser;
+    setStoredUser(user);
+    return user;
+  } catch {
+    clearSession();
     return null;
   }
 }
@@ -94,16 +154,19 @@ api.interceptors.response.use(
         original.headers.Authorization = `Bearer ${tokens.accessToken}`;
         return api(original);
       }
-      if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/login')) {
-        window.location.href = '/login';
+      if (typeof window !== "undefined" && !window.location.pathname.startsWith("/login")) {
+        window.location.href = "/login?reason=session-expired";
       }
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export function getApiError(error: unknown): string {
   if (axios.isAxiosError(error)) {
+    if (error.response?.status === 401) {
+      return "Session expired. Please sign in again.";
+    }
     return error.response?.data?.error ?? error.message;
   }
   if (error instanceof Error) return error.message;

@@ -1,12 +1,22 @@
 import { create } from 'zustand';
-import type { AuthTokens, AuthUser } from '@settl/types';
-import { api, getApiError, loadStoredTokens, setStoredUser, setTokens, getStoredUser } from '@/lib/api';
+import type { AuthUser } from '@settl/types';
+import {
+  api,
+  clearSession,
+  ensureValidSession,
+  getApiError,
+  getStoredUser,
+  loadStoredTokens,
+  onSessionExpired,
+  setStoredUser,
+  setTokens,
+} from '@/lib/api';
 
 type AuthState = {
   user: AuthUser | null;
   isLoading: boolean;
   isInitialized: boolean;
-  initialize: () => void;
+  initialize: () => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   register: (data: { email: string; password: string; name: string; username: string }) => Promise<void>;
   logout: () => Promise<void>;
@@ -17,10 +27,16 @@ export const useAuthStore = create<AuthState>((set) => ({
   isLoading: false,
   isInitialized: false,
 
-  initialize: () => {
+  initialize: async () => {
     loadStoredTokens();
-    const user = getStoredUser();
-    set({ user, isInitialized: true });
+    if (!getStoredUser()) {
+      set({ user: null, isInitialized: true });
+      return;
+    }
+
+    set({ isLoading: true });
+    const user = await ensureValidSession();
+    set({ user, isLoading: false, isInitialized: true });
   },
 
   login: async (email, password) => {
@@ -55,8 +71,13 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch {
       // ignore
     }
-    setTokens(null);
-    setStoredUser(null);
+    clearSession();
     set({ user: null });
   },
 }));
+
+if (typeof window !== 'undefined') {
+  onSessionExpired(() => {
+    useAuthStore.setState({ user: null });
+  });
+}

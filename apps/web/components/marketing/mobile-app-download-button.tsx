@@ -19,19 +19,24 @@ export function MobileAppDownloadButton({
       download={MOBILE_APK_FILENAME}
       target="_blank"
       rel="noopener noreferrer"
-      className={cn(fullWidth && "block w-full", className)}
+      className={cn("inline-block", fullWidth ? "block w-full" : "w-full sm:w-auto", className)}
     >
       <Button
         type="button"
         size={size}
         variant="outline"
         className={cn(
-          "gap-2 border-emerald-500/30 bg-emerald-500/10 text-emerald-100 hover:bg-emerald-500/20 hover:text-white",
+          "group gap-2.5 rounded-full border border-emerald-400/30 bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-emerald-600/15 font-medium text-emerald-50 shadow-lg shadow-emerald-500/10 backdrop-blur-md transition-all duration-200 hover:scale-[1.02] hover:border-emerald-300/40 hover:from-emerald-500/25 hover:to-teal-500/20 hover:text-white hover:shadow-emerald-500/20",
           fullWidth && "w-full",
-          size === "lg" && "px-8 text-base",
+          !fullWidth && "w-full sm:w-auto",
+          size === "lg" && "h-12 px-10 text-base",
+          size === "default" && "h-11 px-8",
         )}
       >
-        <span aria-hidden className="text-lg leading-none">
+        <span
+          aria-hidden
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-sm transition-transform duration-200 group-hover:scale-110"
+        >
           📱
         </span>
         Get Android app

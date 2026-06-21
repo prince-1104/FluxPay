@@ -9,7 +9,24 @@ import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 
 const app = express();
 
-app.use(cors({ origin: env.clientUrl, credentials: true }));
+function isAllowedOrigin(origin: string | undefined): boolean {
+  if (!origin) return true;
+  if (origin === env.clientUrl) return true;
+  if (env.nodeEnv === 'development' && /^http:\/\/localhost:\d+$/.test(origin)) {
+    return true;
+  }
+  return false;
+}
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (isAllowedOrigin(origin)) callback(null, true);
+      else callback(new Error(`CORS blocked origin: ${origin}`));
+    },
+    credentials: true,
+  }),
+);
 app.use(helmet());
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));

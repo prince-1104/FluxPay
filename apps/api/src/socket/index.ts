@@ -8,7 +8,16 @@ let io: Server | null = null;
 export function initSocket(server: HttpServer): Server {
   io = new Server(server, {
     cors: {
-      origin: env.clientUrl,
+      origin:
+        env.nodeEnv === 'development'
+          ? (origin, callback) => {
+              if (!origin || origin === env.clientUrl || /^http:\/\/localhost:\d+$/.test(origin)) {
+                callback(null, true);
+              } else {
+                callback(new Error('Not allowed by CORS'));
+              }
+            }
+          : env.clientUrl,
       credentials: true,
     },
   });

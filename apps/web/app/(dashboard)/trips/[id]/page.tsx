@@ -31,7 +31,7 @@ import {
   UserMinus,
 } from "lucide-react";
 import { api, getApiError } from "@/lib/api";
-import { formatCurrency } from "@settl/utils";
+import { formatCurrency } from "@/lib/currency";
 import type { ExpenseWithSplits, TripWithMembers, SettlementWithUsers } from "@settl/types";
 import { useAuthStore } from "@/stores/auth-store";
 import { Button } from "@/components/ui/button";

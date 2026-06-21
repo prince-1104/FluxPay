@@ -17,7 +17,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const initialize = useAuthStore((s) => s.initialize);
 
   useEffect(() => {
-    initialize();
+    void initialize();
   }, [initialize]);
 
   return (

@@ -23,7 +23,7 @@ import {
   Cell,
 } from "recharts";
 import { api } from "@/lib/api";
-import { formatCurrency } from "@settl/utils";
+import { formatCurrency } from "@/lib/currency";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { StatCard } from "@/components/shared/stat-card";

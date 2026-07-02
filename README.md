@@ -99,3 +99,20 @@ See `.env.example` for JWT, Redis, Cashfree, R2, Firebase, Google Vision, and Re
 | AI settle | — | — | ✓ |
 
 Use **Pricing** page or `POST /premium/simulate-upgrade` in development to test upgrades.
+
+## Production deployment
+
+See **[DEPLOYMENT.md](DEPLOYMENT.md)** for the full guide.
+
+**Quick summary:**
+
+1. **Vercel** — deploy `apps/web` (Root Directory: `apps/web`)
+2. **Railway / Render** — deploy the Express API (`render.yaml` included)
+3. **Neon** — PostgreSQL + run `migrate:deploy`
+4. Set `NEXT_PUBLIC_API_URL` on Vercel → your API URL
+5. Set `CLIENT_URL` on API → your Vercel URL
+
+```bash
+pnpm build:web   # test web production build locally
+pnpm build:api   # test API production build locally
+```

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MobileAppDownloadButton } from "@/components/marketing/mobile-app-download-button";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const login = useAuthStore((s) => s.login);
@@ -71,5 +71,13 @@ export default function LoginPage() {
       <MobileAppDownloadButton fullWidth size="lg" />
       <p className="text-center text-xs text-neutral-600">Download the FluxPay Android app</p>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="py-12 text-center text-sm text-neutral-500">Loading…</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

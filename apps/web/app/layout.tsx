@@ -17,6 +17,13 @@ export const metadata: Metadata = {
   title: "Settl — Smart Group Expense Splitting for Trips & Teams",
   description:
     "Split trip expenses fairly, settle up instantly, and manage group budgets with Settl — the premium SaaS for travelers and friend groups.",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   openGraph: {
     title: "Settl — Group Expense Splitting",
     description: "Fair splits. Smart settlements. Zero awkward money talks.",

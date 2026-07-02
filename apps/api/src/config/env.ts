@@ -24,6 +24,10 @@ export const env = {
   port: parseInt(process.env.PORT ?? '4000', 10),
   nodeEnv: process.env.NODE_ENV ?? 'development',
   clientUrl: process.env.CLIENT_URL ?? 'http://localhost:3000',
+  allowedOrigins: (process.env.ALLOWED_ORIGINS ?? '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean),
   databaseUrl: required('DATABASE_URL', 'postgresql://settl:settl@localhost:5432/settl?schema=public'),
   redisUrl: process.env.REDIS_URL ?? 'redis://localhost:6379',
   jwt: {

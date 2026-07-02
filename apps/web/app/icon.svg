@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="face" x1="96" y1="64" x2="416" y2="448" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A78BFA"/>
+      <stop offset="0.45" stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#5B21B6"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="128" y1="448" x2="384" y2="448" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4C1D95"/>
+      <stop offset="1" stop-color="#312E81"/>
+    </linearGradient>
+    <linearGradient id="gloss" x1="256" y1="72" x2="256" y2="280" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="360" y1="108" x2="408" y2="156" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FCD34D"/>
+      <stop offset="1" stop-color="#F59E0B"/>
+    </linearGradient>
+    <filter id="shadow" x="20%" y="20%" width="80%" height="90%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- 3D extrusion / depth slab -->
+  <rect x="72" y="88" width="368" height="368" rx="88" fill="url(#edge)"/>
+
+  <!-- Main icon face -->
+  <rect x="72" y="56" width="368" height="368" rx="88" fill="url(#face)" filter="url(#shadow)"/>
+
+  <!-- Inner rim highlight -->
+  <rect x="72" y="56" width="368" height="368" rx="88" stroke="#FFFFFF" stroke-opacity="0.14" stroke-width="4"/>
+
+  <!-- Top gloss -->
+  <path
+    d="M112 96C112 76.67 127.67 61 147 61H365C384.33 61 400 76.67 400 96V210C400 132 334 88 256 88C178 88 112 132 112 210V96Z"
+    fill="url(#gloss)"
+  />
+
+  <!-- Premium gold sparkle -->
+  <circle cx="392" cy="120" r="22" fill="url(#gold)"/>
+  <path
+    d="M392 98L396 114H412L400 124L404 140L392 130L380 140L384 124L372 114H388L392 98Z"
+    fill="#FFFBEB"
+    opacity="0.95"
+  />
+
+  <!-- Bold "S" with embossed depth -->
+  <path
+    d="M318 168C318 142 296 124 256 124C216 124 194 142 194 168H230C230 158 240 152 256 152C272 152 282 158 282 168C282 180 270 186 244 194C210 204 190 220 190 252C190 288 218 312 256 312C294 312 322 288 322 252H286C286 264 274 272 256 272C238 272 226 264 226 252C226 240 238 234 264 226C298 216 318 200 318 168Z"
+    fill="#FFFFFF"
+    opacity="0.18"
+    transform="translate(0 10)"
+  />
+  <path
+    d="M318 158C318 132 296 114 256 114C216 114 194 132 194 158H230C230 148 240 142 256 142C272 142 282 148 282 158C282 170 270 176 244 184C210 194 190 210 190 242C190 278 218 302 256 302C294 302 322 278 322 242H286C286 254 274 262 256 262C238 262 226 254 226 242C226 230 238 224 264 216C298 206 318 190 318 158Z"
+    fill="#FFFFFF"
+  />
+</svg>

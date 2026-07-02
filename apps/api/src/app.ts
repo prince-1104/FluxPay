@@ -9,12 +9,26 @@ import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 
 const app = express();
 
+function parseAllowedOrigins(): string[] {
+  return (process.env.ALLOWED_ORIGINS ?? '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
 function isAllowedOrigin(origin: string | undefined): boolean {
   if (!origin) return true;
-  if (origin === env.clientUrl) return true;
+
+  const allowed = new Set([env.clientUrl, ...parseAllowedOrigins()]);
+  if (allowed.has(origin)) return true;
+
   if (env.nodeEnv === 'development' && /^http:\/\/localhost:\d+$/.test(origin)) {
     return true;
   }
+
+  // Vercel production + preview deployments
+  if (/^https:\/\/[\w.-]+\.vercel\.app$/.test(origin)) return true;
+
   return false;
 }
 

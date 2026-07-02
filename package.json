@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
+    "build:web": "turbo run build --filter=web",
+    "build:api": "turbo run build --filter=api",
     "lint": "turbo run lint",
     "eas-build-post-install": "pnpm --filter @settl/types build && pnpm --filter @settl/utils build"
   },
